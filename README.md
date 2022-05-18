@@ -1,2 +1,5 @@
 # LPIC1
-An repository for LPIC1 stuff and notes from "LPIC-1- Study Guide" by C. Bresnahan and R. Blum
+
+This repository contains notes / summaries of **LPIC-1 Study Guide** by `C. Bresnahan` and `R. Blum`.
+
+And other LPIC-1 stuff :)
