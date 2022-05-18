@@ -31,7 +31,10 @@
     - [File-Summarizing](#file-summarizing)
       - [Counting with `wc`](#counting-with-wc)
       - [Pulling Out Portions with `cut`](#pulling-out-portions-with-cut)
-    - [Using Streams, Redirection, and Pipes](#using-streams-redirection-and-pipes)
+      - [Discovering Repeated Lines with `uniq`](#discovering-repeated-lines-with-uniq)
+      - [Digesting an MD5 Algorithm](#digesting-an-md5-algorithm)
+      - [Securing Hash Algorithms](#securing-hash-algorithms)
+  - [Using Streams, Redirection, and Pipes](#using-streams-redirection-and-pipes)
       - [Redirecting Input and Output](#redirecting-input-and-output)
     - [Regex](#regex)
       - [grep](#grep)
@@ -329,13 +332,37 @@ wc -c   # ==> chars
 
 #### Pulling Out Portions with `cut`
 
+The `cut` utility helps to quickly extract small data sections
+
 ```bash
 cut byte -b list    # or --bytes=list (*same as -c*)
 cut field -f list   # or --fields=list , Note: must be used by -d
 cut -d char         # or --delim=char  for specify delimiter, don't forget about -f
 ```
 
-### Using Streams, Redirection, and Pipes
+#### Discovering Repeated Lines with `uniq`
+
+A quick way to find repeated lines in a text file is with the `uniq` utility.
+
+#### Digesting an MD5 Algorithm
+
+The `md5sum` utility is based on the MD5 message-digest algorithm.
+> It is excellent for checking a file’s integrity.
+
+#### Securing Hash Algorithms
+
+The **Secure Hash Algorithms** (SHA) is a family of various hash functions.
+
+> Though typically used for cryptography purposes, they can also be used to verify a file’s integrity after it is copied or moved to another location.
+
+The quickest way to find SHA utilities is via:
+
+```bash
+# List all utils
+$ ls -1 /usr/bin/sha???sum
+```
+
+## Using Streams, Redirection, and Pipes
 
 #### Redirecting Input and Output
 
