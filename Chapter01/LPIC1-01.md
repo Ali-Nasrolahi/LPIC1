@@ -14,23 +14,25 @@
     - [Navigating the Directory Structure](#navigating-the-directory-structure)
     - [Understanding Internal and External Comamands](#understanding-internal-and-external-comamands)
   - [Using Environment Variables](#using-environment-variables)
+  - [Editing Text Files](#editing-text-files)
+  - [Processing Text Using Filters](#processing-text-using-filters)
+    - [File-Combining Commands](#file-combining-commands)
+      - [expand and unexpand](#expand-and-unexpand)
+    - [File-Transforming Commands](#file-transforming-commands)
+      - [Uncovering with `od`](#uncovering-with-od)
+      - [Separating with `split`](#separating-with-split)
+    - [File-Formatting Commands](#file-formatting-commands)
+      - [Organizing with `sort`](#organizing-with-sort)
+      - [Numbering with `nl`](#numbering-with-nl)
+    - [File-Viewing Commands](#file-viewing-commands)
+      - [Using `more`or `less`](#using-moreor-less)
+      - [Looking at files with `head`](#looking-at-files-with-head)
+      - [Viewing Files with `tail`](#viewing-files-with-tail)
+    - [File-Summarizing](#file-summarizing)
+      - [Counting with `wc`](#counting-with-wc)
+      - [Pulling Out Portions with `cut`](#pulling-out-portions-with-cut)
     - [Using Streams, Redirection, and Pipes](#using-streams-redirection-and-pipes)
       - [Redirecting Input and Output](#redirecting-input-and-output)
-    - [Processing Text Using Filters](#processing-text-using-filters)
-      - [Cat](#cat)
-      - [Join](#join)
-      - [Paste](#paste)
-      - [expand and unexpand](#expand-and-unexpand)
-      - [od](#od)
-      - [sort](#sort)
-      - [split](#split)
-      - [tr [options] SET1 SET2](#tr-options-set1-set2)
-      - [uniq](#uniq)
-    - [File-Formatting Commands](#file-formatting-commands)
-    - [File-Viewing](#file-viewing)
-    - [File-Summarizing](#file-summarizing)
-      - [cut](#cut)
-      - [wc](#wc)
     - [Regex](#regex)
       - [grep](#grep)
       - [sed](#sed)
@@ -92,8 +94,7 @@ $ readlink /bin/sh
 
 To quickly determine what shell you are using at the command line, you can employ the **environment variable** `SHELL` along with the `echo` command.
 
-> The `$` is added prior to the variable’s name in order to tap into the data stored within that variable.
-
+> The `$` is added prior to the variable’s name in order to tap into the data stored within that variable.  
 > Get current version of the Bash shell via the `BASH_VERSION`.
 
 ```bash
@@ -204,41 +205,43 @@ you can simply reverse any modifications you make to the variable by using the `
 Using `export` to preserve an environment variable’s definition.
 
 ```bash
-# export - set the export attributes for variables
+# export - set the export attributes for variable s
 $ export ENV=some_value
 ```
 
-### Using Streams, Redirection, and Pipes
+---
 
-#### Redirecting Input and Output
+## Editing Text Files
 
-- **&>** or **2>&1** Creates a new file containing both standard output and standard error.  If the specified file exists, it’s overwritten.
-- **<>** Causes the specified file to be used for both standard input and standard output
+Checkout `Cheat-sheets` repo for overview of vim commands.
 
-### Processing Text Using Filters
+---
 
-#### Cat
+## Processing Text Using Filters
+
+### File-Combining Commands
+
+To view a small text file, use the `cat` command
 
 ```bash
+# cat - concatenate files and print on the standard output
 cat -E  #   or --show-ends --> Display line ends 
 cat -n  #   or --number --> Number lines 
 cat -s  #   or --squeeze-blank --> Minimize blank lines 
 cat -T  #   or --show-tabs --> Display special characters
 ```
 
-#### Join
-
-*-1* and *-2* associated with N-th felids to join by.
-
-> for instance:
+If you want to display two files side-by-side use the `paste` command.
 
 ```bash
-join -1 2 -2 3 #    compares first file 2nd field with second file 3rd field
+# paste - merge lines of files
+$ paste random.txt numbers.txt
 ```
 
-#### Paste
-
-> merges files line by line and separates them with tabs
+```bash
+# join - join lines of two files on a common field
+$ join -1 2 -2 3 #    compares first file 2nd field with second file 3rd field
+```
 
 #### expand and unexpand
 
@@ -248,65 +251,74 @@ join -1 2 -2 3 #    compares first file 2nd field with second file 3rd field
 expand -t nums #    or --tabs=nums  --> tab spacing value
 ```
 
-#### od
+### File-Transforming Commands
 
-> shows octal ,hex, dec and other format of a file
+#### Uncovering with `od`
 
-#### sort
-
-```bash
-sort -i         #   or --ignore-case --> Ignore case 
-sort -M         #   or --month-sort --> Month sort 
-sort -n         #   Numeric sort 
-sort -r         #   or --reverse --> Reverse sort order 
-sort -k field   #   or --key=field --> Sort field 
-```
-
-#### split
+This command shows octal ,hex, dec and other format of a file
 
 ```bash
-split -b size   #   or --bytes=size --> Split by bytes 
-split -l lines  #   or --lines=lines --> Split by number of lines 
-split -C=size   #   or --line-bytes=size --> Split by bytes in line-sized chunks 
+# od - dump files in octal and other formats
+$ od file
 ```
 
-#### tr [options] SET1 SET2
+#### Separating with `split`
+
+This utility allows you to divide a **large file** into **smaller chunks**.
+> which is handy when you want to quickly create a smaller text fi le for testing pur- poses.
 
 ```bash
-tr -t   # or --truncate-set1 # option causes tr to truncate SET1 to the size of SET2 instead.
-tr -d   # causes the program to delete the characters from SET1
-
-#shortcuts like [:alnum:] (all numbers and letters), [:upper:] (all uppercase letters), [:lower:] (all lowercase letters), and [:digit:] (all digits).
+# split - split a file into pieces
+$ split file.txt
+$ split -b size   #   or --bytes=size --> Split by bytes 
+$ split -l lines  #   or --lines=lines --> Split by number of lines 
+$ split -C=size   #   or --line-bytes=size --> Split by bytes in line-sized chunks 
 ```
-
-#### uniq
-
-> removes repeated lines *(use with sort)*
 
 ### File-Formatting Commands
 
-- `fmt` *Reformat Paragraphs*
-- `nl` *Number Lines*
-- `pr` *Prepare a File for Printing*
+#### Organizing with `sort`
 
-### File-Viewing
+The `sort` utility sorts a file’s data.
 
-- `head` and `tail` (-c for number of *bytes or chars* and -n for number of *lines*)
-- `tail -f` is tracks file latest changes ---> **Extremely useful**
-- `less` and `more` (*only* in less you can use h for showing help)
+```bash
+# sort - sort lines of text files
+$ sort -i         #   or --ignore-case --> Ignore case 
+$ sort -M         #   or --month-sort --> Month sort 
+$ sort -n         #   Numeric sort 
+$ sort -r         #   or --reverse --> Reverse sort order 
+$ sort -k field   #   or --key=field --> Sort field 
+```
+
+#### Numbering with `nl`
+
+The `nl` command allows you to number lines in a text file in powerful ways.
+
+### File-Viewing Commands
+
+#### Using `more`or `less`
+
+A **pager utility** allows you to view one text page at a time and move through the text at your own pace.
+
+The two most commonly used pagers are the `more` and `less` utilities.
+
+#### Looking at files with `head`
+
+The `head` command displays the first 10 lines of a text file
+
+#### Viewing Files with `tail`
+
+The `tail` command will show a file’s last 10 text lines.
+
+One of the most useful `tail` utility features is its ability to **watch log** files.
+Use the `-f` switch on the `tail` command and provide the log filename to watch as the command’s argument.
+> You will see a few recent log file entries immediately.
 
 ### File-Summarizing
 
-#### cut
+#### Counting with `wc`
 
-```bash
-cut byte -b list    # or --bytes=list (*same as -c*)
-cut field -f list   # or --fields=list , Note: must be used by -d
-cut -d char         # or --delim=char  for specify delimiter, don't forget about -f
-```
-
-#### wc
-
+The `wc` utility will display the file’s number of lines, words, and bytes in that order.
 > output format  [lines] [words] [bytes/chars]
 
 ```bash
@@ -314,6 +326,21 @@ wc -l   # ==> lines
 wc -w   # ==> words
 wc -c   # ==> chars
 ```
+
+#### Pulling Out Portions with `cut`
+
+```bash
+cut byte -b list    # or --bytes=list (*same as -c*)
+cut field -f list   # or --fields=list , Note: must be used by -d
+cut -d char         # or --delim=char  for specify delimiter, don't forget about -f
+```
+
+### Using Streams, Redirection, and Pipes
+
+#### Redirecting Input and Output
+
+- **&>** or **2>&1** Creates a new file containing both standard output and standard error.  If the specified file exists, it’s overwritten.
+- **<>** Causes the specified file to be used for both standard input and standard output
 
 ### Regex
 
