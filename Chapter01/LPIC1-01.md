@@ -17,7 +17,6 @@
   - [Editing Text Files](#editing-text-files)
   - [Processing Text Using Filters](#processing-text-using-filters)
     - [File-Combining Commands](#file-combining-commands)
-      - [expand and unexpand](#expand-and-unexpand)
     - [File-Transforming Commands](#file-transforming-commands)
       - [Uncovering with `od`](#uncovering-with-od)
       - [Separating with `split`](#separating-with-split)
@@ -34,18 +33,15 @@
       - [Discovering Repeated Lines with `uniq`](#discovering-repeated-lines-with-uniq)
       - [Digesting an MD5 Algorithm](#digesting-an-md5-algorithm)
       - [Securing Hash Algorithms](#securing-hash-algorithms)
+  - [Using Regular Expressions](#using-regular-expressions)
+    - [Using `grep`](#using-grep)
+    - [Understanding Basic Regular Expressions](#understanding-basic-regular-expressions)
+    - [Understanding Extended Regular Expressions](#understanding-extended-regular-expressions)
   - [Using Streams, Redirection, and Pipes](#using-streams-redirection-and-pipes)
-      - [Redirecting Input and Output](#redirecting-input-and-output)
-    - [Regex](#regex)
-      - [grep](#grep)
-      - [sed](#sed)
-    - [Managing Processes](#managing-processes)
-      - [ps [options]](#ps-options)
-        - [Interpreting ps Output](#interpreting-ps-output)
-      - [top](#top)
-      - [Jobs, Foreground and Background Processes](#jobs-foreground-and-background-processes)
-      - [Managing Process Priorities](#managing-process-priorities)
-      - [Killing Processes](#killing-processes)
+    - [Redirecting Input and Output](#redirecting-input-and-output)
+    - [Piping Data between Programs](#piping-data-between-programs)
+    - [Using `sed`](#using-sed)
+    - [Generating Command Lines](#generating-command-lines)
   - [END](#end)
 
 ## Reaching a Shell
@@ -246,14 +242,6 @@ $ paste random.txt numbers.txt
 $ join -1 2 -2 3 #    compares first file 2nd field with second file 3rd field
 ```
 
-#### expand and unexpand
-
-> convert tabs to spaces and vice versa with unexpand
-
-```bash
-expand -t nums #    or --tabs=nums  --> tab spacing value
-```
-
 ### File-Transforming Commands
 
 #### Uncovering with `od`
@@ -362,14 +350,28 @@ The quickest way to find SHA utilities is via:
 $ ls -1 /usr/bin/sha???sum
 ```
 
-## Using Streams, Redirection, and Pipes
+---
 
-#### Redirecting Input and Output
+## Using Regular Expressions
 
-- **&>** or **2>&1** Creates a new file containing both standard output and standard error.  If the specified file exists, it’s overwritten.
-- **<>** Causes the specified file to be used for both standard input and standard output
+### Using `grep`
 
-### Regex
+The `grep` command is powerful in its use of regular expressions, which will help with filtering text files.
+
+- *Count matching lines*: displays the number of lines that match the specified pattern if you use the `-c or --count option`.
+- *Specify a pattern input file*: The `-f file or --file=file` option takes pattern input from the specified file rather than from the command line.
+- *Ignore case*: You can perform a case-insensitive search, rather than the default case-sensitive search, by using the `-i or --ignore-case` option.
+- *Search recursively*: The `-r or --recursive` option searches in the specified directory and all subdirectories rather than simply the specified directory.
+- *Use an extended regular expression*: To use an extended regular expression, you can pass the `-E or --extended` regexp option.
+
+> Favorite combination:
+
+```bash
+# grep - print lines that match patterns
+$ grep -irn "pattern" files
+```
+
+### Understanding Basic Regular Expressions
 
 - *Bracket expressions*: choose one of elements in brackets.
     > (for instance: `b[aeiou]g` ==> bag, beg, big, bog, bug)
@@ -387,24 +389,32 @@ $ ls -1 /usr/bin/sha???sum
 - *Escaping*: If you want to match one of the special characters, such as a dot precede it with a backslash (`\`).
     > (for instance: to match a computer hostname (say, twain.example.com), you must escape the dots, as in twain\.example\.com.)
 
-#### grep
+### Understanding Extended Regular Expressions
 
-- *Count matching lines*: displays the number of lines that match the specified pattern if you use the `-c or --count option`.
-- *Specify a pattern input file*: The `-f file or --file=file` option takes pattern input from the specified file rather than from the command line.
-- *Ignore case*: You can perform a case-insensitive search, rather than the default case-sensitive search, by using the `-i or --ignore-case` option.
-- *Search recursively*: The `-r or --recursive` option searches in the specified directory and all subdirectories rather than simply the specified directory.
-- *Use an extended regular expression*: To use an extended regular expression, you can pass the `-E or --extended` regexp option.
+**Extended regular expressions** (EREs) allow more complex patterns.
 
-> Favorite combination:
+---
+
+## Using Streams, Redirection, and Pipes
+
+### Redirecting Input and Output
+
+- **&>** or **2>&1** Creates a new file containing both standard output and standard error.  If the specified file exists, it’s overwritten.
+- **<>** Causes the specified file to be used for both standard input and standard output
+
+### Piping Data between Programs
+
+With the pipe, you can redirect STDOUT, STDIN, and STDERR between multiple commands all on one command line.
 
 ```bash
-grep -irn "pattern" files
+COMMAND1 | COMMAND2 [| COMMANDN]…
 ```
 
-#### sed
+### Using `sed`
 
 ```bash
-sed [OPTION]... {script-only-if-no-other-script} [input-file]...
+# sed - stream editor for filtering and transforming text
+$ sed [OPTION]... {script-only-if-no-other-script} [input-file]...
 ```
 
 > for instance:
@@ -413,107 +423,27 @@ sed [OPTION]... {script-only-if-no-other-script} [input-file]...
 sed "s/old/new" file    # replaces old with new
 ```
 
-### Managing Processes
+### Generating Command Lines
 
-#### ps [options]
+By piping `STDOUT` from other commands into the `xargs` utility, you can build command-line commands on the fly.
 
-> CAUTION: watchout switches with dash (-).In other words, *-x* and *x* are **not same**.
-
-- `-A and -e` ==> display all the processes on the system.
-- `x` ==> displays all processes owned by the user. Also increases the amount of information that’s displayed.
-- `(-u | -U | --User)` User ==> Display one user’s processes. The user variable may be a *username* or a *user ID*.
-- *Display extra information*: The `-f, -l, j, l, u, and v` options all expand the information provided in the ps output.
-- *Display process hierarchy*: The `-H, -f, and --forest` options group processes and use indentation to show the hierarchy of relationships between processes.
-- `-w and w` options tell ps that output *must not* exceeded 80 chars per line. (useful for saving ps output to a file)
-
-> Favorite combination:
-
--`ps aux` and `ps fax`.
-
-##### Interpreting ps Output
-
-- `Username`: The name of the user who runs the programs.
-- `PID`: The process ID (PID) is a number that’s associated with the process. (useful for modify or kill the process).
-- `PPID`: parent process ID (PPID) identifies the process’s parent.
-- `TTY`: The teletype (TTY) is a code used to identify a terminal.
-- CPU time: The `TIME` and `%CPU` headings are two measures of CPU time used.
-  - First indicates the total amount of CPU time consumed
-  - Second represents the percentage of CPU time the process is using when ps executes.
-- CPU priority (nice level): The `NI` column lists these priority codes. Default value is 0.
-  - *Positive* values represent **reduced** priority, while *negative* values represent **increased** priority.
-- Memory use
-  - `RSS`   is resident set size (the memory used by the program and its data)
-  - `MEM`   is the percentage of memory the program is using
-  - `SHARE` column is memory that’s shared with other processes (such as shared libraries)
-- `Command`: is the command used to launch the process
-
-#### top
-
-> Switches
-
-- `-d delay`: This specifies the delay between updates, which is normally 5 seconds.
-- `-p pid`: If you want to monitor specific processes, you can list them using this option.
-- `-n iter`: ou can tell top to display a certain number of updates (iter) and then quit.
-- `-b`: This specifies batch mode, in which top doesn’t use the normal screen update commands
-
-> Commands
-
-- `h or ?`:  These keystrokes display help information
-- `k`: You can kill a process with this command
-- `q`: This option quits from top
-- `r`: You can change a process’s priority with this command.
-- `s`: This command changes the display’s update rate.
-- `P`: This sets the display to sort by **CPU usage**
-- `M`: You can change the display to sort by **memory usage** with this command.
-
-#### Jobs, Foreground and Background Processes
-
-- `jobs`: shows  all jobs in this terminal.
-- Ctrl+Z normally pauses the program and gives you control of the terminal
-- `fg [num]`: restore job [num to foreground]
-- An alternative to launching a program, using Ctrl+Z, and typing bg to run a program in the background is to append an ampersand `&` to the command when launching the program.
-
-#### Managing Process Priorities
-
-`nice [argument] [command [command-arguments]]`
-
-3 ways to give a specific nice-level:
-
-nice-level's range is: **-20 to +19**
+> e.g.
 
 ```bash
-nice -12 number-crunch data.txt               # by -num (dash and nice level)
-nice -n 12 number-crunch data.txt             # by -n num
-nice --adjustment=12 number-crunch data.txt   # by --adjustment=num
+# This will remove EmptyFile[1, 2, ..., any char].txt
+$ ls -1 EmptyFile?.txt | xargs -p /usr/bin/rm
 ```
 
-To renice a running process:
+Another method to created command-line commands on the fly uses shell expansion.
 
-`renice priority [[-p] pids] [[-g] pgrps] [[-u] users]`
+The technique here puts a command to execute within parentheses and precedes it with a dollar sign.
+> as such: `$()`
 
-```bash
-renice 7 16580 -u pdavison tbaker
-
-#This command sets the priority to 7 for PID 16580 and for all processes owned by pdavison and tbaker.
-```
-
-- specify one or more PIDs (pids)
-
-- one or more group IDs (pgrps)
-
-- one or more usernames (users).
-
-#### Killing Processes
+E.G:
 
 ```bash
-kill -l               # Shows all signals
-kill -s signal pid    # Sends a signal to the process (specified by pid) 
-```
-
-`killall [options] [--] name [...]`
-
-```bash
-killall vi            # kills all progrmas named vi
+# Same as previous command
+$ rm -i $(ls EmptyFile?.txt)
 ```
 
 ## END
