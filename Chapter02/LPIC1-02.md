@@ -1,9 +1,14 @@
-# Managing Software
+# Managing Software and Processes
 
-- [Managing Software](#managing-software)
-  - [RPM packages](#rpm-packages)
+- [Managing Software and Processes](#managing-software-and-processes)
+  - [Looking at Package Concepts](#looking-at-package-concepts)
+  - [Using RPM](#using-rpm)
     - [RPM Distributions and Conventions](#rpm-distributions-and-conventions)
     - [The rpm Command Set](#the-rpm-command-set)
+      - [Installing and Updating RPM Packages](#installing-and-updating-rpm-packages)
+      - [Querying RPM Packages](#querying-rpm-packages)
+      - [Verifying RPM Packages](#verifying-rpm-packages)
+      - [Removing RPM Packages](#removing-rpm-packages)
     - [Extracting Data from RPMs](#extracting-data-from-rpms)
   - [Debian packages](#debian-packages)
     - [The `dpkg` Command Set](#the-dpkg-command-set)
@@ -23,23 +28,48 @@
     - [Killing Processes](#killing-processes)
   - [END](#end)
 
-## RPM packages
+## Looking at Package Concepts
+
+Linux distributions have created a system for bundling already compiled applications for distribution.
+
+This bundle is called a **package**, and it consists of most of the files required to run a single application.
+
+You can then *install*, *remove*, and *manage* the entire application as a **single package** rather than as a group of disjointed files.
+
+Tracking software packages on a Linux system is called **package management**.
+
+Two major package management system are:
+
+- Red Hat package management (RPM)
+- Debian package management (Apt)
+
+Each package management system uses a different method of tracking application packages and files, but they both track similar information:
+
+- **Application files**: The package database tracks each individual file as well as the folder where it’s located.
+
+- **Library dependencies**: The package database tracks what library files are **required** for each application and can warn you if a dependent library file is not present when you install a package.
+
+- **Application version**: The package database tracks version numbers of applications so that you know when an updated version of the application is available.
+
+---
+
+## Using RPM
 
 ### RPM Distributions and Conventions
 
 The convention for naming RPM packages is as follows:
 
 ```bash
-packagename-a.b.c-x.arch.rpm
+PACKAGE-NAME - VERSION - RELEASE . ARCHITECTURE .rpm
 ```
 
 - **Package name**: is the name of the package.
   > such as samba.
 
-- **Version number**: `a.b.c` is the package version number.
+- **Version number**: In format of `a.b.c` is the package version number.
   > such as 2.2.7a.
 
-- **Build number**: `x` is the build number (also known as the *release number*).
+- **Release or Build number**: In format of `x` is the build number (also known as the *release number*).
   > This number represents minor changes made by the *package maintainer*, **not** by the *program author*.
 
 - **Architecture**: `arch` is a code for the package’s architecture.
@@ -53,39 +83,65 @@ packagename-a.b.c-x.arch.rpm
 ```bash
 $ rpm [operation][options] [package-files|package-names]
 
-rpm -i # Installs a package; system must not contain a package of the same name.
-rpm -U # Installs a new package or upgrades an existing one.
-rpm -V # or -y or --verify: Verifies a package
-rpm -e # Uninstalls a package
-rpm -q # Queries a package—finds if a package is installed, what files it con- tains, and so on.
+$ rpm -i # Installs a package; system must not contain a package of the same name.
+$ rpm -U # Installs a new package or upgrades an existing one.
+$ rpm -V # or -y or --verify: Verifies a package
+$ rpm -e # Uninstalls a package
+$ rpm -q # Queries a package—finds if a package is installed, what files it con- tains, and so on.
 -a or --all # Queries or verifies all packages.
 --force # Forces installation of a package even when it means overwriting existing files or packages.
 --nodeps # Specifies that no dependency checks be performed.
 ```
 
-examples:
+#### Installing and Updating RPM Packages
 
 ```bash
-rpm -ivh --force # Use this for test your own rpm packages
-rpm -Uvh samba-3.0.10-1.fc3.i386.rpm #  Upgrade a package
-rpm -qa # query all packages
-rpm -qi # displays information such as when and on what computer the binary package was built
+ # Use this for test your own rpm packages
+$ rpm -ivh --force
+$ rpm -Uvh samba-3.0.10-1.fc3.i386.rpm #  Upgrade a package
+```
+
+#### Querying RPM Packages
+
+```bash
+ # query all packages
+$ rpm -qa
+$ rpm -qi # displays information such as when and on what computer the binary package was built
+```
+
+#### Verifying RPM Packages
+
+```bash
+ # or -y or --verify: Verifies a package
+$ rpm -V
+```
+
+#### Removing RPM Packages
+
+```bash
+ # Uninstalls a package
+$ rpm -e
 ```
 
 ### Extracting Data from RPMs
 
-A good way to retrieve the original source code from a source RPM for compiling the software.
+Occasionally you may need to extract files from an RPM package file without installing it.
+
+The `rpm2cpio` utility is helpful in these situations. It allows you to build a `cpio` archive.
 
 ```bash
-rpm2cpio X.rpm > X.cpio # outputs the cpio archive
+# outputs the cpio archive
+$ rpm2cpio X.rpm > X.cpio
 
 # -i extract an archive and --make-directories to create directories:
-cpio -i --make-directories < X.cpio
+$ cpio -i --make-directories < X.cpio
 
 # OR
 
-rpm2cpio X.rpm | cpio -i --make-directories
+$ rpm2cpio X.rpm | cpio -i --make-directories
 ```
+
+---
 
 ## Debian packages
 
