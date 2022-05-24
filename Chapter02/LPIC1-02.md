@@ -10,6 +10,8 @@
       - [Verifying RPM Packages](#verifying-rpm-packages)
       - [Removing RPM Packages](#removing-rpm-packages)
     - [Extracting Data from RPMs](#extracting-data-from-rpms)
+    - [Using YUM](#using-yum)
+    - [Using ZYpp](#using-zypp)
   - [Debian packages](#debian-packages)
     - [The `dpkg` Command Set](#the-dpkg-command-set)
     - [Using `apt-get`](#using-apt-get)
@@ -143,6 +145,34 @@ $ rpm2cpio X.rpm | cpio -i --make-directories
 
 ---
 
+### Using YUM
+
+Each Linux distribution has its own central clearinghouse of packages, called a **repository**.
+
+The **repository** contains software packages that have been *tested* and known to *install* and *work* correctly in the distribution environment.
+
+The core tool used for working with Red Hat repositories is the `YUM` utility (short for *YellowDog Update Manager*.
+
+> originally developed for the YellowDog Linux distribution).
+
+The `yum` command uses the `/etc/yum.repos.d/` directory to hold files that list the different repositories it checks for packages.
+
+```bash
+# The basic `yum` command syntax is:
+$ yum [OPTIONS] [COMMAND] [PACKAGE…]
+```
+
+```bash
+# Some of command associated with `yum`:
+$ yum install [package]      # Installs the specified package
+$ yum reinstall [package]    # Reinstalls the specified package
+$ yum remove [package]       # Removes a package from the system
+$ yum search [package]       # Searches repository package names and descriptions for specified keyword
+$ yum info [package]         # Displays information about the specified package
+$ yum groupinstall [package] # Installs the specified package group
+```
+
+### Using ZYpp
 ## Debian packages
 
 ### The `dpkg` Command Set
