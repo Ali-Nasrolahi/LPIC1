@@ -12,13 +12,15 @@
     - [Extracting Data from RPMs](#extracting-data-from-rpms)
     - [Using YUM](#using-yum)
     - [Using ZYpp](#using-zypp)
-  - [Debian packages](#debian-packages)
+  - [Using Debian Packages](#using-debian-packages)
+    - [Debian Package File Conventions](#debian-package-file-conventions)
     - [The `dpkg` Command Set](#the-dpkg-command-set)
+    - [Looking at the APT Suite](#looking-at-the-apt-suite)
+    - [Using `apt-cache`](#using-apt-cache)
     - [Using `apt-get`](#using-apt-get)
-      - [Commands](#commands)
       - [Switches](#switches)
-  - [Converting between Package Formats](#converting-between-package-formats)
-  - [Library Management Commands](#library-management-commands)
+    - [Reconfiguring Packages](#reconfiguring-packages)
+  - [Managing Shared Libraries](#managing-shared-libraries)
     - [Displaying Shared Library Dependencies](#displaying-shared-library-dependencies)
     - [Re-loading the Library Cache](#re-loading-the-library-cache)
   - [Managing Processes](#managing-processes)
@@ -164,18 +166,48 @@ $ yum [OPTIONS] [COMMAND] [PACKAGE…]
 
 ```bash
 # Some of command associated with `yum`:
-$ yum install [package]      # Installs the specified package
-$ yum reinstall [package]    # Reinstalls the specified package
-$ yum remove [package]       # Removes a package from the system
-$ yum search [package]       # Searches repository package names and descriptions for specified keyword
-$ yum info [package]         # Displays information about the specified package
-$ yum groupinstall [package] # Installs the specified package group
+$ yum install      [package]  # Installs the specified package
+$ yum reinstall    [package]  # Reinstalls the specified package
+$ yum remove       [package]  # Removes a package from the system
+$ yum search       [keywords] # Searches repository package names and descriptions for specified keyword
+$ yum info         [package]  # Displays information about the specified package
+$ yum groupinstall [package]  # Installs the specified package group
 ```
 
 ### Using ZYpp
-## Debian packages
+
+The openSUSE has created its own package management tool called `ZYpp` (also called `libzypp`).
+
+Its `zypper` command allows you to *query*, *install*, and *remove* software packages on your system directly from an openSUSE repository.
+
+```bash
+# basic commands of zypper (same functionality as yum's)
+$ zyppper install [package]
+$ zyppper info    [package]
+$ zyppper remove  [package]
+$ zyppper search  [keyword]
+$ zyppper update
+```
+
+---
+
+## Using Debian Packages
+
+### Debian Package File Conventions
+
+Debian bundles application files into a single `.deb` package file for distribution that uses the following filename format:
+
+```bash
+PACKAGE-NAME - VERSION - RELEASE _ ARCHITECTURE .deb
+```
+
+This filenaming convention for `.deb` packages is very similar to the `.rpm` file format.
+
+> However, in the `ARCHITECTURE` , you typically find `amd64` , denoting it was optimized for the **AMD64/Intel64 CPU** architecture.
 
 ### The `dpkg` Command Set
+
+The core tool to use for handling `.deb` files is the `dpkg` program, which is a command-line utility that has options for *installing*, *updating*, and *removing* `.deb` package files on your Linux system.
 
 ```bash
 $ dpkg [options][action] [package-files|package-name]
@@ -196,12 +228,27 @@ dpkg -r samba
 dpkg -p samba-common
 ```
 
+### Looking at the APT Suite
+
+The **Advanced Package Tool** (`APT`) suite is used for working with Debian repositories.
+
+This includes the `apt-cache` program that provides information about the package database, and the `apt-get` program that does the work of installing, updating, and removing packages.
+
+The APT suite of tools relies on the `/etc/apt/sources.list` file to identify the locations of where to look for repositories.
+
+### Using `apt-cache`
+
+```bash
+# apt-cache - query the APT cache
+$ apt-cache depends [package] # Displays the dependencies required for the package
+$ apt-cache pkgnames          # Shows all the packages installed on the system
+$ apt-cache search  [keyword] # Displays the name of packages matching the specified item
+$ apt-cache showpkg [package] # Lists information about the specified package
+$ apt-cache stats   [package] # Displays package statistics for the system
+$ apt-cache unmet   [package] # Shows any unmet dependencies for all installed packages or the specified installed package
+```
+
 ### Using `apt-get`
-
-Repository list location:
-`/etc/apt/sources.list`
-
-#### Commands
 
 ```bash
 $ apt-get [options][command] [package-names]
@@ -231,21 +278,20 @@ apt purge             # Removes a package as well as its configurations file.
 --no-upgrade            # Causes apt-get to not upgrade a package if an older version is already installed.
 ```
 
-## Converting between Package Formats
+### Reconfiguring Packages
+
+If the package required configuration when it was installed.
+
+Instead of purging the package and reinstalling it, you can employ the handy `dpkg-reconfigure` tool.
 
 ```bash
-$ alien [options] file[...]
-
-# options
---to-deb
---to-rpm
---to-slp
---to-tgz
-
---install               # installs the converted package and removes the converted file.
+# E.G
+$ dpkg-reconfigure [package]
 ```
 
-## Library Management Commands
+> It would be worthwhile to run the `debconf-show` command and record the settings before and after running the `dpkg-reconfigure` utility.
+
+## Managing Shared Libraries
 
 ### Displaying Shared Library Dependencies
 
