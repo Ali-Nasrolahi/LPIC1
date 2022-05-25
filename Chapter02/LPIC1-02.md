@@ -31,10 +31,20 @@
     - [Examining Process Lists](#examining-process-lists)
     - [Viewing Processes with `ps`](#viewing-processes-with-ps)
       - [Interpreting ps Output](#interpreting-ps-output)
-    - [top](#top)
-    - [Jobs, Foreground and Background Processes](#jobs-foreground-and-background-processes)
+    - [Viewing Processes with `top`](#viewing-processes-with-top)
+    - [Employing Multiple Screens](#employing-multiple-screens)
+    - [Multiplexing with `screen`](#multiplexing-with-screen)
+    - [Multiplexing with `tmux`](#multiplexing-with-tmux)
+    - [Understanding Foreground and Background Processes](#understanding-foreground-and-background-processes)
+      - [Sending a Job to the Background](#sending-a-job-to-the-background)
+      - [Sending Multiple Jobs to the Background](#sending-multiple-jobs-to-the-background)
+      - [Bringing Jobs to the Foreground](#bringing-jobs-to-the-foreground)
+        - [Sending a Running Program to the Background](#sending-a-running-program-to-the-background)
+      - [Stopping a Job](#stopping-a-job)
+      - [Keeping a Job Running after Logout](#keeping-a-job-running-after-logout)
     - [Managing Process Priorities](#managing-process-priorities)
     - [Killing Processes](#killing-processes)
+    - [Sending Signals with the `pkill` Command](#sending-signals-with-the-pkill-command)
   - [END](#end)
 
 ## Looking at Package Concepts
@@ -410,7 +420,7 @@ The `init` process is the core of the Linux system; it runs scripts that start a
   - `SHARE` column is memory that’s shared with other processes (such as shared libraries)
 - `Command`: is the command used to launch the process
 
-### top
+### Viewing Processes with `top`
 
 > Switches
 
@@ -429,14 +439,108 @@ The `init` process is the core of the Linux system; it runs scripts that start a
 - `P`: This sets the display to sort by **CPU usage**
 - `M`: You can change the display to sort by **memory usage** with this command.
 
-### Jobs, Foreground and Background Processes
+### Employing Multiple Screens
+
+In a nongraphical environment, you can open window sessions side-by-side to perform multiple operations and monitor their displays.
+
+This is accomplished through a **terminal multiplexer**.
+
+### Multiplexing with `screen`
+
+The `screen` utility (also called *GNU Screen*) is often available in a distribution’s repository, but typically it is not installed by default.
+
+```bash
+# Few screen commands
+$ screen # creates a window
+$ screen -ls # Viewing your screen window
+$ screen -r screen-id # Reattach to the screen
+
+# Commands inside the screen window (Ctrl + A) or ^A is shortcut prefix.
+# commands alogn with it are:
+(^ + A) + D # Detach from a screen window
+Shift+| # Split current screen window vertically into two focuses
+Tab # Jump to next window focus
+K # Kill current window
+N # Move to next screen window
+P # Move to previous screen window
+Shift+S # Split current screen window horizontally into two focuses
+\ # Kill all of a processes’ windows and terminate screen
+```
+
+### Multiplexing with `tmux`
+
+`Tmux`provides similar features and functionality as the `screen` program, with some additional niceties.
+
+```bash
+# Few tmux commands
+$ tmux new # Creates window
+$ tmux ls # Displays all your created and detached window sessions
+$ tmux attach-session -t session # To reattach to a particular detached window session
+```
+
+```bash
+# Inside tmux commands. tmux ,same as screen, has shortcut prefix which is ^b
+D # To detach from a tmux window session
+& # Kill the current window
+% # Split current screen window vertically into two panes
+single-quote (") # Split current screen window horizontally into two panes "
+L # Move to previous window
+N # Move to next window
+O # Move to next pane
+^O # Rotate panes forward in current window
+? # view a complete list of all the various key bindings and more
+```
+
+### Understanding Foreground and Background Processes
+
+#### Sending a Job to the Background
+
+Running a program in background mode is a fairly easy thing to do; just place an **ampersand** symbol (`&`) after the command.
+
+When you send a command into the background, the system assigns it a **job number** as well as a PID.
+
+`jobs` utility allows you to see any processes that belong to you that are running in background mode.
+
+However, it displays only the **job number**. If you need the job’s `PID`, you have to issue the `jobs -l` command.
 
 - `jobs`: shows  all jobs in this terminal.
-- Ctrl+Z normally pauses the program and gives you control of the terminal
+
+#### Sending Multiple Jobs to the Background
+
+#### Bringing Jobs to the Foreground
+
+Use the `fg` command and the background job’s number, preceded by a percent sign ( `%` ).
+
 - `fg [num]`: restore job [num to foreground]
-- An alternative to launching a program, using Ctrl+Z, and typing bg to run a program in the background is to append an ampersand `&` to the command when launching the program.
+
+##### Sending a Running Program to the Background
+
+After you have the paused program’s job number, employ the `bg` command to send it to the background.
+
+- Ctrl+Z normally pauses the program and gives you control of the terminal
+- `bg [num]` sends a job to background
+
+#### Stopping a Job
+
+Stopping a running job is accomplished with the `kill` command and the job’s number.
+
+**IMPORTANT**:
+
+When stopping a program running in background mode with the `kill` command, it is **critical** to add a *percent sign* before the job’s number.
+
+#### Keeping a Job Running after Logout
+
+If you want your script to continue running in background mode after you’ve logged off the terminal, you’ll need to employ the `nohup` utility. This command will make your background jobs immune to **hang-up signals**.
+> which are sent to the job when a terminal session exits.
+
+```bash
+# e.g.
+$ nohup bash script.sh &
+```
 
 ### Managing Process Priorities
+
+The `nice` and `renice` commands allow you to set and change a program’s **niceness level**, which in turn modifies the **priority level** assigned by the system to an application.
 
 `nice [argument] [command [command-arguments]]`
 
@@ -478,5 +582,13 @@ kill -s signal pid    # Sends a signal to the process (specified by pid)
 ```bash
 killall vi            # kills all progrmas named vi
 ```
+
+### Sending Signals with the `pkill` Command
+
+The `pkill` command is a powerful way to send processes’ signals using selection criteria other than their *PID* numbers or commands they are running.
+
+The `pkill` utility works hand-in-hand with the `pgrep` utility.
+
+With `pgrep`, you can test out your selection criteria prior to sending signals to the selected processes via ``pkill.
 
 ## END
