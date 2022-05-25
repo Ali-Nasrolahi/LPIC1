@@ -21,10 +21,15 @@
       - [Switches](#switches)
     - [Reconfiguring Packages](#reconfiguring-packages)
   - [Managing Shared Libraries](#managing-shared-libraries)
-    - [Displaying Shared Library Dependencies](#displaying-shared-library-dependencies)
-    - [Re-loading the Library Cache](#re-loading-the-library-cache)
+    - [Library Principles](#library-principles)
+    - [Locating Library Files](#locating-library-files)
+    - [Loading Dynamically](#loading-dynamically)
+    - [Library Management Commands](#library-management-commands)
+      - [Managing the Library Cache](#managing-the-library-cache)
+    - [Troubleshooting Shared Library Dependencies](#troubleshooting-shared-library-dependencies)
   - [Managing Processes](#managing-processes)
-    - [ps [options]](#ps-options)
+    - [Examining Process Lists](#examining-process-lists)
+    - [Viewing Processes with `ps`](#viewing-processes-with-ps)
       - [Interpreting ps Output](#interpreting-ps-output)
     - [top](#top)
     - [Jobs, Foreground and Background Processes](#jobs-foreground-and-background-processes)
@@ -291,9 +296,64 @@ $ dpkg-reconfigure [package]
 
 > It would be worthwhile to run the `debconf-show` command and record the settings before and after running the `dpkg-reconfigure` utility.
 
+---
+
 ## Managing Shared Libraries
 
-### Displaying Shared Library Dependencies
+### Library Principles
+
+A **system library** is a collection of items, such as program *functions*.
+
+> Functions are self-contained code modules that perform a specific task within an application, such as opening and reading a data file.
+
+The benefit of splitting functions into separate library files is that multiple applications that use the same functions can **share the same library** files.
+
+These files full of functions make it easier to **distribute** applications, but also make it more complicated to keep track of what library files are installed with which applications.
+
+Linux supports two different fl avors of libraries:
+
+- One is **static** libraries
+  > that are copied into an application when it is compiled.
+- The other flavor is **shared** libraries
+  > where the library functions are copied into memory and bound to the application when the program is launched.
+
+**Shared library** file employs the following filename format:
+
+```bash
+libLIBRARYNAME.so.VERSION
+```
+
+### Locating Library Files
+
+the system will search for the function’s library file in a specific order, as shown:
+
+1. `LD_LIBRARY_PATH` environment variable
+2. Program’s `PATH` environment variable
+3. `/etc/ld.so.conf.d/` folder
+4. `/etc/ld.so.conf` file
+5. `/lib*/` and `/usr/lib*/` folders
+
+### Loading Dynamically
+
+- When a program is started, the **dynamic linker** (also called the *dynamic linker/loader*) is responsible for **finding** the program’s needed library functions.
+
+- After they are located, the *dynamic linker* will **copy** them into memory and bind them to the program.
+
+### Library Management Commands
+
+#### Managing the Library Cache
+
+The **library cache** is a catalog of library directories and all the various libraries contained within them.
+
+When new libraries or library directories are added to the system, this library cache file must be updated.
+
+However, it is not a simple text file you can just edit. Instead, you have to employ the `ldconfig` command.
+
+If you are troubleshooting the library cache, you can easily see what library files are **cataloged** by using the `ldconfig -v` command.
+
+### Troubleshooting Shared Library Dependencies
+
+The `ldd` utility can come in handy if you need to track down missing library files for an application. It displays a **list of the library** files required for the specified application.
 
 ```bash
 $ ldd /bin/ls
@@ -306,28 +366,19 @@ $ ldd /bin/ls
     libattr.so.1 => /lib/libattr.so.1 (0x0000002a95dad000)
 ```
 
-### Re-loading the Library Cache
-
-`ldconfig`: Reloads the cache
-
-```bash
-# Switches
-ldconfig -v           # causes the program to summarize the directories and files it’s registering as it goes about its business.
-
-ldconfig -N           # causes ldconfig to not perform its primary duty of updating the library cache.
-                      # It will, though, update symbolic links to libraries, which is a secondary duty of this program.
-ldconfig -n           # causes ldconfig to update the links contained in the directories specified on the command line.
-
-ldconfig -X           # is the opposite of -N; it causes ldconfig to update the cache but not manage links.
-ldconfig -f conffile  # configuration file from /etc/ld.so.conf by specifying it
-ldconfig -C cachefile # Use a new cache file
-ldconfig -r dir       # tells ldconfig to treat dir as if it were the root (/) directory.
-ldconfig -p           # causes ldconfig to display the current cache
-```
+---
 
 ## Managing Processes
 
-### ps [options]
+### Examining Process Lists
+
+Linux calls each running program a **process**. The Linux system assigns each process a **process ID** (PID) and manages how the process uses *memory* and *CPU time* based on that PID.
+
+When a Linux system first boots, it starts a special process called the `init` process.
+
+The `init` process is the core of the Linux system; it runs scripts that start all of the other processes running on the system.
+
+### Viewing Processes with `ps`
 
 > CAUTION: watchout switches with dash (-).In other words, *-x* and *x* are **not same**.
 
