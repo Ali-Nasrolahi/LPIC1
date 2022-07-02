@@ -5,6 +5,7 @@
     - [Understanding the Role of Firmware](#understanding-the-role-of-firmware)
       - [The BIOS Startup](#the-bios-startup)
       - [The UEFI Startup](#the-uefi-startup)
+    - [Device Interfaces](#device-interfaces)
 
 ## Configuring the Firmware and Core Hardware
 
@@ -28,3 +29,10 @@ To get around that limitation, most operating systems (including Linux and Micro
       - This is done by defining a **master boot record** (`MBR`).
 
 #### The UEFI Startup
+
+Intel created the **Extensible Firmware Interface** (`EFI`) in 1998 to address some of the limitations of `BIOS`. It was somewhat of a slow process, but by 2005, the idea caught on with other vendors, and the **Unified EFI** (`UEFI`) specification was adopted as a standard.
+
+Instead of relying on a single boot sector on a hard drive to hold the boot loader program, UEFI specifies a special **disk partition**, called the **EFI System Partition** (`ESP`), to store boot loader programs.
+> This allows for any size of boot loader program, plus the ability to store multiple boot loader programs for multiple operating systems.
+
+### Device Interfaces
