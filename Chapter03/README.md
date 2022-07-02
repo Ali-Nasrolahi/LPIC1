@@ -9,6 +9,7 @@
       - [PCI Boards](#pci-boards)
       - [The USB Interface](#the-usb-interface)
       - [The GPIO Interface](#the-gpio-interface)
+    - [The `/dev` Directory](#the-dev-directory)
 
 ## Configuring the Firmware and Core Hardware
 
@@ -65,3 +66,24 @@ Lots of different client devices use PCI boards to connect to a server or deskto
 The **Universal Serial Bus** (`USB`) interface has become increasingly popular due to its ease of use and its increasing support for high-speed data communication.
 
 #### The GPIO Interface
+
+The **General Purpose Input/Output** (`GPIO`) interface has become popular with small utility Linux systems, designed for controlling external devices for automation projects.
+> The `GPIO` interface is ideal for supporting communications to external devices such as relays, lights, sensors, and motors.  
+> Applications can read individual GPIO lines to determine the status of switches, turn relays on or off, or read digital values returned from any type of analog-to-digital sensors such as temperature or pressure sensors.
+
+### The `/dev` Directory
+
+**Device files** are files that the Linux kernel creates in the special `/dev` directory to *interface* with hardware devices.
+
+As you add hardware devices such as USB drives, network cards, or hard drives to your system, Linux creates a file in the `/dev` directory representing that hardware device.
+
+There are two types of device fi les in Linux, based on how Linux transfers data to the device:
+
+- **Character device** files: Transfer data **one character** at a time. This method is often used for **serial devices** such as terminals and USB devices.
+
+- **Block device** files: Transfer data in **large blocks of data**. This method is often used for *high-speed data* transfer devices such as hard drives and network cards.
+
+Besides *device files*, Linux also provides a system called the **device mapper**.
+
+The **device mapper** function is performed by the Linux kernel. It **maps** *physical block* devices to *virtual block* devices. These virtual block devices allow the system to intercept the data written
+to or read from the physical device and perform some type of operation on them.
