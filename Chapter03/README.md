@@ -6,6 +6,9 @@
       - [The BIOS Startup](#the-bios-startup)
       - [The UEFI Startup](#the-uefi-startup)
     - [Device Interfaces](#device-interfaces)
+      - [PCI Boards](#pci-boards)
+      - [The USB Interface](#the-usb-interface)
+      - [The GPIO Interface](#the-gpio-interface)
 
 ## Configuring the Firmware and Core Hardware
 
@@ -36,3 +39,29 @@ Instead of relying on a single boot sector on a hard drive to hold the boot load
 > This allows for any size of boot loader program, plus the ability to store multiple boot loader programs for multiple operating systems.
 
 ### Device Interfaces
+
+There are currently three popular standards used to connect devices.
+
+#### PCI Boards
+
+The **Peripheral Component Interconnect** (`PCI`) standard was developed in 1993 as a method for connecting hardware boards to PC motherboards.
+
+The **PCI Express** (PCIe) standard is currently used on most server and desktop workstations to provide a common interface for external hardware devices.
+
+Lots of different client devices use PCI boards to connect to a server or desktop workstation:
+
+- *Internal hard drives*: Hard drives using the **Serial Advanced Technology Attachment** (`SATA`) and the **Small Computer System Interface** (`SCSI`) interface often use PCI boards to connect with workstations or servers.
+
+- *External hard drives*: Network hard drives using the Fibre Channel standard provide a high-speed shared drive environment for server environments.
+
+- *Network interface cards*: Hard-wired network cards allow you to connect the workstation or server to a **local area network** (`LAN`) using the common *RJ-45* cable standard.
+
+- *Wireless cards*: PCI boards are available that support the **IEEE 802.11** standard for wireless connections to LANs.
+
+- *Bluetooth devices*: The Bluetooth technology allows for short-distance wireless communication with other Bluetooth devices in a peer-to-peer network setup.
+
+#### The USB Interface
+
+The **Universal Serial Bus** (`USB`) interface has become increasingly popular due to its ease of use and its increasing support for high-speed data communication.
+
+#### The GPIO Interface
